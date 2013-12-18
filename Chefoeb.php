@@ -1,28 +1,58 @@
 <?php
 
+require_once 'CronApp.php';
+
 /**
  * Class Chefoeb
  * @version 0.2
  */
-class Chefoeb extends ConsoleApp
+class Chefoeb extends CronApp
 {
-    function __construct()
+    /**
+     * @var string
+     */
+    public $sentryDsn;
+    /**
+     * @var Raven_Client
+     */
+    protected $ravenClient;
+
+    /**
+     * @var string
+     */
+    public $hipChatAuthToken;
+    /**
+     * @var string
+     */
+    public $hipChatRoomId;
+    /**
+     * @var string
+     */
+    public $hipChatColor = 'yellow';
+
+    public function actionVersion()
     {
-        $this->write('Version 0.2');
+        echo "Chefoeb v0.2\n";
     }
 
     public function init()
     {
-        $this->write('Checking environment');
-        $this->exec('which git');
-        $this->exec('which knife');
+        parent::init();
+
+        if (!empty($this->sentryDsn)) {
+            $this->ravenClient = new Raven_Client($this->sentryDsn);
+
+            $error_handler = new Raven_ErrorHandler($this->ravenClient);
+            $error_handler->registerExceptionHandler();
+            $error_handler->registerErrorHandler();
+            $error_handler->registerShutdownFunction();
+        }
     }
 
-    public function run($fromCommit = null)
+    public function actionIndex($fromCommit = null)
     {
-        $this->init();
-        $this->write('Main action');
-
+        $this->exec('which git');
+        $this->exec('which knife');
         if (is_null($fromCommit)) {
             $commits = $this->exec('git log -1 --pretty=format:"%H"');
             $fromCommit = reset($commits);
@@ -69,6 +99,7 @@ class Chefoeb extends ConsoleApp
 
     /**
      * @param string[] $files
+     * @throws Exception
      */
     protected function applyCookbooks($files)
     {
@@ -79,7 +110,7 @@ class Chefoeb extends ConsoleApp
                     $changedCookbooks[] = $matches[1];
                 }
             } else {
-                $this->writeError("preg_match failed while parsing cookbook name on file: $file");
+                throw new Exception("preg_match failed while parsing cookbook name on file: $file");
             }
         }
 
@@ -88,6 +119,7 @@ class Chefoeb extends ConsoleApp
 
     /**
      * @param string[] $files
+     * @throws Exception
      */
     protected function applyDataBags($files)
     {
@@ -95,7 +127,7 @@ class Chefoeb extends ConsoleApp
             if (preg_match('#data_bags/([^/]+)/(.+)#', $file, $matches)) {
                 $this->exec("knife data bag from file $matches[1] $matches[2]");
             } else {
-                $this->writeError("preg_match failed while parsing data bag name on file: $file");
+                throw new Exception("preg_match failed while parsing data bag name on file: $file");
             }
         }
     }

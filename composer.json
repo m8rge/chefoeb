@@ -1,0 +1,16 @@
+{
+    "name": "m8rge/chefoeb",
+    "description": "Git to chef knife tool",
+    "minimum-stability": "dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "m8rge",
+            "email": "to.merge@gmail.com"
+        }
+    ],
+    "require": {
+        "m8rge/curl-helper": "1.2",
+        "raven/raven": "0.8.0"
+    }
+}
