@@ -8,7 +8,9 @@ require_once 'vendor/autoload.php';
 require_once 'Chefoeb.php';
 
 $args = $argv;
-array_shift($args);
+$pharFilename = array_shift($args);
+define('PHAR_FILE', basename($pharFilename));
+
 $app = new Chefoeb();
 $app->run($args);
 

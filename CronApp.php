@@ -189,7 +189,7 @@ class CronApp
      */
     public function getHelp()
     {
-        $help = 'Usage: ' . basename(__FILE__) . " <action>";
+        $help = 'Usage: ' . PHAR_FILE . ' <action>';
         $help .= $this->getClassHelp();
         $options = $this->getOptionHelp();
         if (empty($options)) {
