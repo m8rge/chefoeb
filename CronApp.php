@@ -60,13 +60,17 @@ class CronApp
         $output = ob_get_clean();
         $this->log($output);
         if ($return_var) {
-            $error = "$command returned $return_var";
-            $this->log($error);
-            throw new Exception($error);
+            $this->onError("$command returned $return_var");
         }
 
         $output = rtrim($output, PHP_EOL);
         return empty($output) ? array() : explode(PHP_EOL, $output);
+    }
+
+    public function onError($message)
+    {
+        $this->log($message);
+        throw new Exception($message);
     }
 
     public function actionHelp()

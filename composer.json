@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "m8rge/curl-helper": "1.2",
-        "raven/raven": "0.8.0"
+        "raven/raven": "0.8.0",
+        "hipchat/hipchat-php": "v1.2"
     }
 }

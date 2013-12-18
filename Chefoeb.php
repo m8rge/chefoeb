@@ -1,10 +1,12 @@
 <?php
 
+use HipChat\HipChat;
+
 require_once 'CronApp.php';
 
 /**
  * Class Chefoeb
- * @version 0.2
+ * @version 0.5
  */
 class Chefoeb extends CronApp
 {
@@ -12,10 +14,6 @@ class Chefoeb extends CronApp
      * @var string
      */
     public $sentryDsn;
-    /**
-     * @var Raven_Client
-     */
-    protected $ravenClient;
 
     /**
      * @var string
@@ -25,14 +23,23 @@ class Chefoeb extends CronApp
      * @var string
      */
     public $hipChatRoomId;
+
     /**
-     * @var string
+     * @var Raven_Client
      */
-    public $hipChatColor = 'yellow';
+    protected $ravenClient;
+    /**
+     * @var HipChat
+     */
+    protected $hipchatClient;
+    /**
+     * @var string[]
+     */
+    protected $summary = array();
 
     public function actionVersion()
     {
-        echo "Chefoeb v0.2\n";
+        echo "Chefoeb v0.5\n";
     }
 
     public function init()
@@ -46,7 +53,20 @@ class Chefoeb extends CronApp
             $error_handler->registerExceptionHandler();
             $error_handler->registerErrorHandler();
             $error_handler->registerShutdownFunction();
+        } else {
+            $this->log("sentry disabled");
         }
+        if (!empty($this->hipChatAuthToken) && !empty($this->hipChatRoomId)) {
+            $this->hipchatClient = new HipChat($this->hipChatAuthToken);
+        } else {
+            $this->log("hipchat disabled");
+        }
+    }
+
+    public function onError($message)
+    {
+        $this->logToHipChat($message, 'red');
+        parent::onError($message);
     }
 
     public function actionIndex($fromCommit = null)
@@ -65,6 +85,13 @@ class Chefoeb extends CronApp
         $diffStatus = $this->exec("git diff --name-status $fromCommit HEAD");
 
         $this->sendUpdatesToChefServer($diffStatus);
+    }
+
+    public function logToHipChat($message, $color = HipChat::COLOR_YELLOW)
+    {
+        if (!empty($this->hipchatClient)) {
+            $this->hipchatClient->message_room($this->hipChatRoomId, 'chefoeb', $message, intval($color === HipChat::COLOR_RED), $color, HipChat::FORMAT_TEXT);
+        }
     }
 
     /**
