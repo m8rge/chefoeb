@@ -61,7 +61,7 @@ class CronApp
     {
         $this->log("> $command");
         ob_start();
-        passthru($command, $return_var);
+        passthru($command . ' 2>&1', $return_var);
         $output = ob_get_clean();
         $this->log($output);
         if ($return_var) {
