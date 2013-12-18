@@ -65,7 +65,7 @@ class Chefoeb extends CronApp
 
     public function onError($message)
     {
-        $this->logToHipChat($message, 'red');
+        $this->logToHipChat($message, HipChat::COLOR_RED);
         parent::onError($message);
     }
 
@@ -85,6 +85,7 @@ class Chefoeb extends CronApp
         $diffStatus = $this->exec("git diff --name-status $fromCommit HEAD");
 
         $this->sendUpdatesToChefServer($diffStatus);
+        $this->logToHipChat(implode("\n", $this->summary));
     }
 
     public function logToHipChat($message, $color = HipChat::COLOR_YELLOW)
@@ -142,6 +143,7 @@ class Chefoeb extends CronApp
         }
 
         $this->exec("knife cookbook upload " . implode(' ', $changedCookbooks));
+        $this->summary[] = 'Updated cookbooks: ' . implode(' ', $changedCookbooks);
     }
 
     /**
@@ -153,6 +155,7 @@ class Chefoeb extends CronApp
         foreach ($files as $file) {
             if (preg_match('#data_bags/([^/]+)/(.+)#', $file, $matches)) {
                 $this->exec("knife data bag from file $matches[1] $matches[2]");
+                $this->summary[] = "Updated data bag: $matches[1]/$matches[2]";
             } else {
                 throw new Exception("preg_match failed while parsing data bag name on file: $file");
             }
@@ -166,6 +169,7 @@ class Chefoeb extends CronApp
     protected function applyFromFile($subCommand, $files)
     {
         foreach ($files as $filename) {
+            $this->summary[] = "Updated $subCommand: $filename";
             $this->exec("knife $subCommand from file $filename");
         }
     }
