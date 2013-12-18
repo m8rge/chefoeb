@@ -54,12 +54,12 @@ class Chefoeb extends CronApp
             $error_handler->registerErrorHandler();
             $error_handler->registerShutdownFunction();
         } else {
-            $this->log("sentry disabled");
+            $this->log("sentry disabled", self::LEVEL_WARN);
         }
         if (!empty($this->hipChatAuthToken) && !empty($this->hipChatRoomId)) {
             $this->hipchatClient = new HipChat($this->hipChatAuthToken);
         } else {
-            $this->log("hipchat disabled");
+            $this->log("hipchat disabled", self::LEVEL_WARN);
         }
     }
 

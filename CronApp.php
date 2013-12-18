@@ -6,6 +6,10 @@
  */
 class CronApp
 {
+    const LEVEL_INFO = 'info';
+    const LEVEL_WARN = 'warning';
+    const LEVEL_ERROR = 'error';
+
     /**
      * @var string
      */
@@ -34,8 +38,9 @@ class CronApp
 
     /**
      * @param string $text
+     * @param string $level
      */
-    public function log($text)
+    public function log($text, $level = self::LEVEL_INFO)
     {
         if (!empty($text)) {
             $CR = '';
@@ -43,7 +48,7 @@ class CronApp
             if (substr($text, -1, 1) !== "\n") {
                 $CR = "\n";
             }
-            fwrite($this->openedLogFile, date('r') . ' ' . $text . $CR);
+            fwrite($this->openedLogFile, date('r') . ' ' . strtoupper($level) . ': ' . $text . $CR);
         }
     }
 
@@ -69,7 +74,7 @@ class CronApp
 
     public function onError($message)
     {
-        $this->log($message);
+        $this->log($message, self::LEVEL_ERROR);
         throw new Exception($message);
     }
 
