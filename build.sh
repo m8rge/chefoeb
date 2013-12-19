@@ -1,1 +1,1 @@
-php /usr/bin/phar.phar pack -f chefoeb.phar -s index.php -c gz -i Chefoeb\|CronApp\|vendor -x test . && chmod +x ./chefoeb.phar && mv ./chefoeb.phar /Volumes/work/chef/chefoeb.phar
+php /usr/bin/phar.phar pack -f chefoeb.phar -s stub.php -c gz -i Chefoeb\|CronApp\|vendor -x test . && chmod +x ./chefoeb.phar

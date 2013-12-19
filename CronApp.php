@@ -26,7 +26,7 @@ class CronApp
     public function init()
     {
         $this->openedLogFile = fopen($this->logFile, 'a');
-        date('r');
+        date('r'); // test for timezone in php.ini
     }
 
     function __destruct()
@@ -72,6 +72,10 @@ class CronApp
         return empty($output) ? array() : explode(PHP_EOL, $output);
     }
 
+    /**
+     * @param string $message
+     * @throws Exception
+     */
     public function onError($message)
     {
         $this->log($message, self::LEVEL_ERROR);

@@ -10,31 +10,19 @@ require_once 'CronApp.php';
  */
 class Chefoeb extends CronApp
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $sentryDsn;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $hipChatAuthToken;
-    /**
-     * @var string
-     */
+    /** @var string */
     public $hipChatRoomId;
 
-    /**
-     * @var Raven_Client
-     */
+    /** @var Raven_Client */
     protected $ravenClient;
-    /**
-     * @var HipChat
-     */
+    /** @var HipChat */
     protected $hipchatClient;
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $summary = array();
 
     public function actionVersion()
@@ -96,7 +84,7 @@ class Chefoeb extends CronApp
     }
 
     /**
-     * @param $diffStatus
+     * @param string[] $diffStatus
      */
     protected function sendUpdatesToChefServer($diffStatus)
     {
